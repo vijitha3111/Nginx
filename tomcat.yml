@@ -1,0 +1,33 @@
+--- # Install and Configure Tomcat
+- hosts: webservers
+  user: ansible
+  gather_facts: false
+  vars:
+      req_java: java-1.8.0-openjdk    
+      req_tomcat_version: 8.5.59
+      tomcat_url: https://mirrors.estointernet.in/apache/tomcat/tomcat-{{req_tomcat_version.split('.')[0]}}/v{{req_tomcat_version}}/bin/apache-tomcat-{{req_tomcat_version}}.tar.gz
+  tasks:
+      - name: install java
+        yum:
+          name: "{{req_java}}"
+          state: present
+      - name: create /home/ansible/tomcat directory
+        file:
+            path: /home/ansible/tomcat
+            state: directory
+            mode: 0755
+      - name: download tomcat
+        get_url:
+               url: "{{tomcat_url}}"
+               dest: /home/ansible/tomcat
+      - name: extract tomcat
+        unarchive:
+               src: /home/ansible/tomcat/apache-tomcat-{{req_tomcat_version}}.tar.gz
+               dest: /home/ansible/tomcat
+               remote_src: yes
+      - name: Start Tomcat service
+        shell: nohup /home/ansible/tomcat/apache-tomcat-8.5.59/bin/startup.sh
+        
+       
+        
+
